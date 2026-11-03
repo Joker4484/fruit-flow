@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173d2c"><title>FRUIT FLOW V1.9 Backup Restore</title>
+<style>
+:root{--forest:#173d2c;--green:#28734b;--mint:#eaf4ed;--bg:#f5f7f4;--ink:#1d2b22;--muted:#718078;--line:#e2e9e3;--amber:#94621d;--red:#a94c4c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Thai",sans-serif}
+.app{max-width:560px;margin:auto;min-height:100dvh;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+header{background:var(--forest);color:#fff;padding:19px 18px 21px;border-radius:0 0 23px 23px}
+.brandrow,.between{display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{font-size:18px;font-weight:800;letter-spacing:1px}.brand small{display:block;font-size:10px;font-weight:400;color:#c9dacf;letter-spacing:1px}.version{font-size:10px;border:1px solid #ffffff45;border-radius:20px;padding:6px 9px;color:#e1ece4}
+header h1{font-size:21px;margin:17px 0 2px}header p{margin:0;color:#d0dfd4;font-size:12px}
+main{padding:14px}.screen{display:none}.screen.active{display:block}h2{font-size:16px;margin:0}.muted{color:var(--muted);font-size:11px}.section{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:13px 0 9px}
+.hero{background:linear-gradient(140deg,#e7f3e9,#f7faf7);border:1px solid #d5e7da;border-radius:17px;padding:15px}.hero small{color:#587260}.hero strong{display:block;font-size:28px;color:#17663a;margin:3px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.stat,.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:12px}.stat span{font-size:11px;color:var(--muted)}.stat b{display:block;font-size:18px;margin-top:4px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.action{background:white;border:1px solid var(--line);border-radius:13px;padding:13px;text-align:left;font:inherit;color:var(--ink);min-height:87px}.action strong{display:block;font-size:14px;margin:5px 0 2px}.action small{font-size:10px;color:var(--muted)}
+.field{margin:9px 0}.field label{display:block;font-size:11px;color:#59695f;margin-bottom:4px}input,select,textarea{width:100%;min-width:0;border:1px solid #dce5dd;border-radius:9px;padding:10px;background:#fff;font:inherit;font-size:13px;color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.primary,.outline{width:100%;padding:11px;border-radius:11px;font:inherit;font-weight:700;margin-top:8px}.primary{background:var(--green);border:0;color:white}.outline{background:#fff;border:1px solid #b9d3c1;color:var(--green)}
+.grade-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px;margin:9px 0}.compact-grade{padding:9px 10px}.compact-grade .field{margin:6px 0}.compact-grade input{padding:9px;font-size:13px}.sale-weight-edit{margin-top:7px;border-top:1px dashed var(--line);padding-top:7px}.sale-weight-edit summary{font-size:11px;color:var(--green);cursor:pointer;font-weight:700}.auto-label{font-weight:400;color:var(--muted);margin-left:4px}.sale-weight-edit .field{margin-bottom:0}.grade-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.grade-head b{font-size:13px}.remove{border:0;background:#fff0f0;color:var(--red);padding:5px 8px;border-radius:7px;font-size:11px}
+.compare-head{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}.compare-head div{border-radius:9px;padding:7px 9px;font-size:11px;font-weight:700}.buyhead{background:#eaf4ed;color:#24633f}.salehead{background:#eaf0fa;color:#315f94}
+.amountline{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin-top:8px;padding-top:7px;border-top:1px dashed var(--line)}.amountline b{color:var(--ink)}
+.totals{background:#f8faf8;border:1px solid var(--line);border-radius:12px;padding:11px;margin-top:10px}.totalrow{display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:12px}.totalrow strong{font-size:14px}.note{background:#fff7e9;border:1px solid #f0dfc2;color:#775b32;border-radius:10px;padding:10px;font-size:11px;line-height:1.5;margin:10px 0}
+.pill{font-size:10px;padding:4px 8px;border-radius:20px;background:var(--mint);color:#28623f}.pill.warn{background:#fff2dc;color:#895d1c}.pill.good{background:#e7f5eb;color:#246b3e}
+.listrow{padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.listrow:last-child{border:0}.empty{text-align:center;color:var(--muted);font-size:12px;padding:18px 8px}
+.subnav{display:flex;gap:6px;overflow:auto;margin:9px 0}.subnav button{white-space:nowrap;background:#fff;border:1px solid var(--line);border-radius:18px;padding:7px 11px;font:inherit;font-size:11px}.subnav button.active{background:var(--forest);color:#fff}
+.subpanel{display:none}.subpanel.active{display:block}
+nav{position:fixed;z-index:5;bottom:0;left:50%;transform:translateX(-50%);width:min(560px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#ffffffed;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+nav button{background:none;border:0;color:#718078;font:inherit;font-size:10px;padding:3px}nav button span{display:block;font-size:18px}nav button.active{color:var(--green);font-weight:800}
+@media(min-width:560px){body{padding:16px 0}.app{min-height:calc(100dvh - 32px);border-radius:22px;overflow:hidden;box-shadow:0 10px 35px #183b2515}nav{bottom:16px;border-radius:0 0 22px 22px}}
+
+.invoice-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px;overflow:hidden}
+.invoice-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10px}
+.invoice-table th,.invoice-table td{padding:5px 2px;border-bottom:1px solid #dfe6df;text-align:right;overflow-wrap:anywhere}
+.invoice-table th:first-child,.invoice-table td:first-child{text-align:left;width:27%}
+.invoice-table th:nth-child(2),.invoice-table td:nth-child(2){width:10%}
+.invoice-table th:nth-child(3),.invoice-table td:nth-child(3){width:20%}
+.invoice-table th:nth-child(4),.invoice-table td:nth-child(4){width:17%}
+.invoice-table th:nth-child(5),.invoice-table td:nth-child(5){width:26%}
+.invoice-table th{font-weight:800;background:#f1f6f1}
+.invoice-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.invoice-actions button{font-size:12px;padding:10px 5px}
+@media(max-width:380px){.invoice-table{font-size:9px}.invoice-table th,.invoice-table td{padding:4px 1px}.invoice-table th:first-child,.invoice-table td:first-child{width:25%}.invoice-table th:nth-child(2),.invoice-table td:nth-child(2){width:9%}.invoice-table th:nth-child(3),.invoice-table td:nth-child(3){width:20%}.invoice-table th:nth-child(4),.invoice-table td:nth-child(4){width:18%}.invoice-table th:nth-child(5),.invoice-table td:nth-child(5){width:28%}}
+
+.quick-grades{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:8px 0 10px}
+.quick-grade{padding:9px 2px!important;font-size:13px!important;font-weight:800;border:1px solid var(--green)!important;background:#edf6ef!important;color:var(--green)!important;border-radius:9px!important}
+.compact-grade{padding:9px!important;margin:7px 0!important;gap:5px!important}
+.compact-grade .grade-head{margin-bottom:3px!important}
+.grade-top{display:grid;grid-template-columns:minmax(0,1fr) 74px;gap:6px;align-items:end}
+.grade-top .field,.compact-inputs .field{margin:0!important;min-width:0}
+.grade-top input,.compact-inputs input{min-width:0!important;padding:8px 7px!important;font-size:14px!important}
+.compact-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:5px}
+.compact-inputs label{font-size:11px!important;margin-bottom:3px!important}
+.compact-grade .remove{padding:4px 8px!important;font-size:11px!important}
+.compact-grade .sale-weight-edit{margin-top:3px!important}
+.compact-grade .sale-weight-edit summary{font-size:11px!important;padding:5px 0!important}
+@media(max-width:380px){.quick-grades{gap:4px}.quick-grade{font-size:12px!important;padding:8px 1px!important}.grade-top{grid-template-columns:minmax(0,1fr) 64px;gap:4px}.compact-inputs{gap:4px}.compact-inputs input{font-size:12px!important;padding:7px 4px!important}}
+
+
+.internal-fee{background:#fff8e9;border:1px solid #eadbb9;border-radius:10px;padding:10px;margin:10px 0}
+.internal-fee input{max-width:160px}
+.modal-backdrop{position:fixed;inset:0;background:#0009;z-index:1000;display:flex;align-items:center;justify-content:center;padding:12px}
+.record-modal{background:var(--card,#fff);color:var(--text,#26352c);width:min(680px,100%);max-height:88vh;overflow:auto;border-radius:16px;padding:16px;box-shadow:0 12px 40px #0004}
+.record-modal h2{font-size:18px;margin:0 0 12px}
+.record-modal .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.record-modal .field{min-width:0}
+.record-modal input{width:100%;min-width:0}
+.record-modal table{width:100%;border-collapse:collapse;font-size:12px}
+.record-modal th,.record-modal td{padding:5px 3px;border-bottom:1px solid var(--line);text-align:left}
+.record-modal td input{padding:7px 4px;font-size:12px}
+.record-modal .modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.record-modal .modal-actions button{flex:1;min-width:120px}
+.record-modal .detail-line{padding:7px 0;border-bottom:1px solid var(--line)}
+.listrow{cursor:pointer}
+.listrow:active{opacity:.75}
+
+
+.profit-stages{padding:14px!important;margin:8px 0 14px}
+.profit-stage{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line)}
+.profit-stage div{display:flex;flex-direction:column;gap:3px}
+.profit-stage small{font-size:11px;color:var(--muted)}
+.profit-stage strong{font-size:22px;color:var(--green);white-space:nowrap}
+.profit-stage.second strong{color:var(--text)}
+.profit-note{font-size:11px;line-height:1.5;margin-top:10px}
+
+.backup-panel{margin-top:12px}
+.backup-actions{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}
+.backup-actions button{width:100%}
+#backupStatus{font-size:12px;margin-top:8px}
+</style></head>
+<body><div class="app">
+<header><div class="brandrow"><div class="brand">🍃 FRUIT FLOW<small>FRUIT BROKER MANAGEMENT</small></div><div class="version">V1.8 · สรุปกำไร 2 ก้อน</div></div><h1 id="heading">ภาพรวมธุรกิจ</h1><p id="dateText"></p></header>
+<main>
+<section id="home" class="screen active">
+ <div class="hero"><small>ส่วนต่างเบื้องต้นจากยอดซื้อและยอดขายที่บันทึก</small><strong id="margin">฿0</strong><div class="muted" id="marginHint">ยังไม่มีรายการ</div></div>
+ <div class="grid">
+  <div class="stat"><span>ยอดซื้อผลไม้</span><b id="buySum">฿0</b></div><div class="stat"><span>ยอดขายตามบิล</span><b id="saleSum">฿0</b></div>
+  <div class="stat"><span>ค่าใช้จ่าย</span><b id="expenseSum">฿0</b></div><div class="stat"><span>ลูกหนี้คงเหลือ</span><b id="arSum">฿0</b></div>
+ </div>
+ <div class="section"><h2>สรุปกำไรภายใน</h2><span class="muted">แสดงก่อนและหลังหักค่าแผง</span></div>
+ <div class="panel profit-stages">
+  <div class="profit-stage"><div><b>กำไรก้อนที่ 1</b><small>ก่อนหักค่าแผงตลาด</small></div><strong id="profitBeforeStall">฿0</strong></div>
+  <div class="profit-stage second"><div><b>กำไรก้อนที่ 2</b><small>หลังหักค่าแผงตลาด 3,000 บาท/คัน/เที่ยว</small></div><strong id="profitAfterStall">฿0</strong></div>
+  <div class="muted profit-note">คำนวณจากยอดขายผลไม้ − ต้นทุนซื้อ − ค่าใช้จ่ายอื่น และหักค่าแผงเฉพาะในกำไรก้อนที่ 2 · ไม่รวมค่ารถ</div>
+ </div>
+ <div class="section"><h2>เริ่มทำรายการ</h2><span class="muted">เมนูหลัก</span></div>
+ <div class="actions">
+  <button class="action" onclick="go('compare')"><span>⚖️</span><strong>ซื้อ–ขายเปรียบเทียบ</strong><small>กรอกต้นทุนและราคาตลาดในหน้าเดียว</small></button>
+  <button class="action" onclick="go('accounts')"><span>💰</span><strong>บัญชีและรับเงิน</strong><small>รับโอน · ตัดบิล · ค่าใช้จ่าย</small></button>
+  <button class="action" onclick="go('daily')"><span>📅</span><strong>สรุปผลรายวัน</strong><small>เลือกวันที่ ดูกำไร ขาดทุน และยอดค้าง</small></button>
+  <button class="action" onclick="go('history')"><span>📚</span><strong>ประวัติรายการ</strong><small>ค้นและส่งออกข้อมูล</small></button>
+ </div>
+ <div class="section"><h2>รายการล่าสุด</h2></div><div class="panel" id="recent"><div class="empty">ยังไม่มีรายการ</div></div>
+ <div class="note">ตัวเลขส่วนต่างบนหน้านี้เป็นภาพรวมยอดขายลบยอดซื้อและค่าใช้จ่าย ยังไม่ใช่กำไรสุทธิที่ปิดรอบแล้ว หากมีการซื้อขายคนละรอบหรือมีต้นทุนคงเหลือ</div>
+</section>
+
+<section id="compare" class="screen">
+ <div class="section"><h2>⚖️ ซื้อ–ขายเปรียบเทียบ</h2><span class="pill">หน้าเดียว</span></div>
+ <div class="panel">
+  <div class="two"><div class="field"><label>ชนิดผลไม้</label><select id="fruit"></select></div><div class="field"><label>วันที่ทำรายการ</label><input id="workDate" type="date"></div></div>
+  <div class="two"><div class="field"><label>สวน / ผู้ขาย</label><input id="orchard" placeholder="ชื่อสวน"></div><div class="field"><label>ตลาด / ผู้ซื้อ</label><input id="market" placeholder="ชื่อตลาด"></div></div>
+  <div class="field"><label>เลขที่บิลตลาด (ถ้ามี)</label><input id="billNo" placeholder="เว้นว่างเพื่อให้ระบบสร้างให้"></div>
+  <div class="two">
+   <div class="field"><label>รูปแบบค่ารถ (แสดงในบิลตลาด)</label><select id="truckMode"><option value="6000">ขาเดียว · 6,000 บาท</option><option value="8000">ตีลังกลับ · 8,000 บาท</option><option value="0">ไม่มีค่ารถ</option><option value="custom">กำหนดเอง</option></select></div>
+   <div class="field"><label>ค่ารถกรณีกำหนดเอง</label><input id="truckCustom" type="number" min="0" step="1" placeholder="จำนวนบาท"></div>
+  </div>
+  <div class="field internal-fee"><label>ค่าแผงภายใน (ต่อคัน / เที่ยว)</label><input id="stallFee" type="number" min="0" step="1" value="3000"><small class="muted">หักครั้งเดียวต่อเที่ยว ไม่เกี่ยวกับจำนวนครั้งที่ตลาดโอน และไม่แสดงในบิลตลาด</small></div>
+  <div class="section"><h2>ใส่ข้อมูลแยกตามเบอร์</h2><span class="muted">แตะเบอร์เพื่อเพิ่มทันที</span></div>
+  <div class="quick-grades">
+   <button type="button" class="quick-grade" onclick="addGrade('พิเศษ')">พิเศษ</button>
+   <button type="button" class="quick-grade" onclick="addGrade('โบ้')">โบ้</button>
+   <button type="button" class="quick-grade" onclick="addGrade('1')">1</button>
+   <button type="button" class="quick-grade" onclick="addGrade('2')">2</button>
+   <button type="button" class="quick-grade" onclick="addGrade('3')">3</button>
+   <button type="button" class="quick-grade" onclick="addGrade('ร่วง')">ร่วง</button>
+  </div>
+  <div id="gradeRows"></div><datalist id="gradeOptions"><option value="พิเศษ"><option value="โบ้"><option value="1"><option value="2"><option value="3"><option value="ร่วง"></datalist>
+  <button class="outline" onclick="addGrade('')">＋ เพิ่มเบอร์อื่น</button>
+  <div class="totals">
+   <div class="totalrow"><span>น้ำหนักซื้อรวม</span><strong id="buyKg">0 กก.</strong></div>
+   <div class="totalrow"><span>ยอดซื้อรวม</span><strong id="buyAmount">฿0</strong></div>
+   <div class="totalrow"><span>น้ำหนักขายรวม</span><strong id="saleKg">0 กก.</strong></div>
+   <div class="totalrow"><span>ยอดขายรวม / ยอดบิล</span><strong id="saleAmount">฿0</strong></div>
+   <div class="totalrow" style="border-top:1px solid var(--line);margin-top:5px;padding-top:9px"><b>ส่วนต่างยอดขาย − ยอดซื้อ</b><strong id="difference" style="color:var(--green)">฿0</strong></div>
+  </div>
+  <div class="section"><h2>🧾 ใบส่งตลาด (ตัวอย่าง)</h2><span class="muted">แสดงเฉพาะข้อมูลตลาด</span></div>
+  <div class="invoice-wrap" id="invoicePreview"><div class="muted">กรอกข้อมูลขายเพื่อดูตัวอย่างใบส่งตลาด</div></div>
+  <div class="invoice-actions">
+   <button class="outline" onclick="downloadInvoice()">บันทึกใบส่งตลาดเป็นรูป</button>
+   <button class="outline" onclick="shareInvoice()">แชร์ใบส่งตลาด</button>
+  </div>
+  <div class="note">ค่ารถแสดงแยกจากยอดผลไม้ในใบส่งตลาด และไม่ถูกนำไปคำนวณกำไรของผลไม้</div>
+  <div class="note">ใส่ข้อมูลซื้อและขายในแถวเดียวกันได้ แต่จำนวนกิโลฝั่งซื้อและฝั่งขายแยกกันได้ เพราะน้ำหนักที่ส่งตลาดอาจไม่เท่ากับน้ำหนักที่รับซื้อ</div>
+  <button class="primary" onclick="saveCompare()">บันทึกรายการซื้อและบิลตลาด</button>
+ </div>
+</section>
+
+<section id="accounts" class="screen">
+ <div class="section"><h2>💰 บัญชีและรับเงิน</h2></div>
+ <div class="subnav"><button class="active" onclick="tab('receipts',this)">รับเงินจากตลาด</button><button onclick="tab('expenses',this)">ค่าใช้จ่าย</button><button onclick="tab('bills',this)">บิลค้างรับ</button></div>
+ <div id="receipts" class="subpanel active">
+  <div class="panel"><h2>บันทึกเงินโอน</h2>
+   <div class="field"><label>ตลาด / ผู้โอน</label><input id="payMarket" placeholder="ชื่อตลาด"></div>
+   <div class="two"><div class="field"><label>วันที่รับเงิน</label><input id="payDate" type="date"></div><div class="field"><label>ยอดเงินโอน</label><input id="payAmount" type="number" min="0" step=".01"></div></div>
+   <div class="field"><label>หมายเหตุ / เลขอ้างอิง</label><input id="payNote" placeholder="รายละเอียดการโอน"></div>
+   <div class="section"><b>เลือกบิลที่ตลาดแจ้งว่าชำระ</b><span class="muted">เลือกได้หลายใบ</span></div><div id="allocations"><div class="empty">ยังไม่มีบิลค้างรับ</div></div>
+   <div class="totalrow"><span>ยอดตัดบิล</span><b id="allocTotal">฿0</b></div><div class="totalrow"><span>ยอดโอนส่วนเกิน</span><b id="extraTotal">฿0</b></div>
+   <div id="extraChoice" style="display:none"><div class="field"><label>จัดการเงินส่วนเกิน</label><select id="extraMode"><option value="hold">พักยอดรอระบุบิล</option><option value="advance">เงินรับล่วงหน้า</option></select></div></div>
+   <button class="primary" onclick="savePayment()">บันทึกเงินโอนและตัดบิล</button>
+  </div>
+  <div class="panel" style="margin-top:10px"><h2>ประวัติรับเงิน</h2><div id="payments"><div class="empty">ยังไม่มีรายการ</div></div></div>
+ </div>
+ <div id="expenses" class="subpanel"><div class="panel"><h2>บันทึกค่าใช้จ่าย</h2>
+  <div class="two"><div class="field"><label>ประเภท</label><select id="expenseType"><option>ค่ารถ</option><option>ค่าแผงตลาด</option><option>ค่าแรง</option><option>ค่าคัดแยก / บรรจุ</option><option>ค่าน้ำมัน</option><option>อื่น ๆ</option></select></div><div class="field"><label>วันที่</label><input id="expenseDate" type="date"></div></div>
+  <div class="field"><label>จำนวนเงิน</label><input id="expenseAmount" type="number" min="0" step=".01"></div><div class="field"><label>รายละเอียด</label><input id="expenseNote"></div>
+  <button class="primary" onclick="saveExpense()">บันทึกค่าใช้จ่าย</button></div></div>
+ <div id="bills" class="subpanel"><div class="panel"><h2>บิลค้างรับ</h2><div id="billList"><div class="empty">ยังไม่มีบิล</div></div></div></div>
+</section>
+
+
+<section id="daily" class="screen">
+ <div class="section"><h2>📅 สรุปผลรายวัน</h2><span class="pill">เลือกวันที่ย้อนหลังได้</span></div>
+ <div class="panel">
+  <div class="field"><label>เลือกวันที่ต้องการตรวจสอบ</label><input id="dailyDate" type="date" onchange="renderDaily()"></div>
+  <div class="grid">
+   <div class="stat"><span>ยอดซื้อผลไม้</span><b id="dBuy">฿0</b></div>
+   <div class="stat"><span>ยอดขายตลาด</span><b id="dSale">฿0</b></div>
+   <div class="stat"><span>ค่าใช้จ่าย</span><b id="dExpense">฿0</b></div>
+   <div class="stat"><span>ยอดลูกหนี้คงเหลือจากบิลวันนั้น</span><b id="dAR">฿0</b></div>
+  </div>
+  <div class="totals">
+   <div class="totalrow"><span>น้ำหนักซื้อ</span><b id="dBuyKg">0 กก.</b></div>
+   <div class="totalrow"><span>น้ำหนักส่งตลาด</span><b id="dSaleKg">0 กก.</b></div>
+   <div class="totalrow"><span>น้ำหนักที่ไม่ได้ส่งตลาด</span><b id="dRejectedKg">0 กก.</b></div>
+   <div class="totalrow"><span>ต้นทุนของน้ำหนักที่ไม่ได้ส่ง</span><b id="dRejectedCost">฿0</b></div>
+   <div class="totalrow" style="border-top:1px solid var(--line);margin-top:5px;padding-top:9px"><strong>ผลต่างหลังหักยอดซื้อและค่าใช้จ่าย</strong><strong id="dResult">฿0</strong></div>
+  </div>
+  <div class="note">ผลรายวันนี้ใช้ยอดขายของวันที่เลือก ลบต้นทุนซื้อทั้งหมดของวันนั้นและค่าใช้จ่ายที่บันทึกวันเดียวกัน โดยถือว่าน้ำหนักซื้อที่ไม่ได้ส่งตลาดเป็นต้นทุนที่แบกรับไว้ หากสินค้าบางส่วนเก็บไว้ขายวันอื่น ผลนี้จะเป็นผลเบื้องต้น ไม่ใช่กำไรสุทธิของล็อตจนกว่าจะบันทึกการขายภายหลัง</div>
+ </div>
+ <div class="section"><h2>แยกตามเบอร์ / เกรด</h2></div>
+ <div class="panel" id="dailyGrades"><div class="empty">เลือกวันที่เพื่อดูรายละเอียด</div></div>
+ <div class="section"><h2>รายการของวันนั้น</h2></div>
+ <div class="panel" id="dailyRecords"><div class="empty">ยังไม่มีรายการในวันที่เลือก</div></div>
+</section>
+
+<section id="analysis" class="screen">
+ <div class="section"><h2>✨ วิเคราะห์ซื้อ–ขาย</h2><span class="pill">คำนวณจากข้อมูล</span></div>
+ <div class="panel"><div class="muted">ส่วนต่างแยกตามเบอร์จากรายการเปรียบเทียบที่บันทึก</div><div id="analysisRows" style="margin-top:8px"><div class="empty">ยังไม่มีข้อมูลให้วิเคราะห์</div></div></div>
+ <div class="note">หน้านี้คำนวณเปรียบเทียบจากข้อมูลที่บันทึก ยังไม่ได้เชื่อม AI ภายนอก หากข้อมูลไม่ครบจะไม่คาดเดาตัวเลข</div>
+</section>
+
+<section id="history" class="screen">
+ <div class="section"><h2>📚 ประวัติรายการ</h2><button class="outline" style="width:auto;margin:0;padding:7px" onclick="exportCSV()">ส่งออก CSV</button></div>
+ <div class="panel" id="historyList"><div class="empty">ยังไม่มีรายการ</div></div>
+ <div class="panel backup-panel">
+  <h2>🛡️ สำรองและกู้คืนข้อมูล</h2>
+  <p class="muted">ใช้ย้ายข้อมูลระหว่างเครื่อง หรือเก็บสำเนาป้องกันข้อมูลสูญหาย</p>
+  <div class="backup-actions">
+   <button class="primary" onclick="downloadBackup()">ดาวน์โหลดไฟล์สำรองข้อมูล</button>
+   <button class="outline" onclick="$('restoreFile').click()">นำไฟล์สำรองกลับเข้าระบบ</button>
+   <input id="restoreFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(event)">
+  </div>
+  <div class="note">ไฟล์สำรองมีข้อมูลซื้อ ขาย บิลตลาด การรับเงิน ค่าใช้จ่าย ผลไม้ และประวัติการแก้ไข เก็บไฟล์นี้ไว้ในที่ปลอดภัย</div>
+  <div class="muted" id="backupStatus">ยังไม่ได้สำรองข้อมูลในครั้งนี้</div>
+ </div>
+ <div class="note">ข้อมูลยังเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น ยังไม่ซิงก์มือถือสองเครื่อง ขั้นนี้เป็นการเตรียมระบบสำรองก่อนเชื่อมออนไลน์</div>
+ <button class="outline" onclick="clearData()">ล้างประวัติทั้งหมดในเครื่องนี้</button>
+</section>
+</main>
+
+<div id="recordModal" class="modal-backdrop" style="display:none" onclick="if(event.target===this)closeRecord()">
+ <div class="record-modal">
+  <div class="between"><h2 id="recordModalTitle">รายละเอียดรายการ</h2><button class="remove" onclick="closeRecord()">ปิด</button></div>
+  <div id="recordModalBody"></div>
+ </div>
+</div>
+
+<nav><button class="active" data-id="home" onclick="go('home')"><span>⌂</span>ภาพรวม</button><button data-id="compare" onclick="go('compare')"><span>⚖️</span>ซื้อ–ขาย</button><button data-id="daily" onclick="go('daily')"><span>📅</span>รายวัน</button><button data-id="accounts" onclick="go('accounts')"><span>💰</span>บัญชี</button><button data-id="analysis" onclick="go('analysis')"><span>✦</span>วิเคราะห์</button></nav>
+</div>
+<script>
+const $=id=>document.getElementById(id),today=new Date().toISOString().slice(0,10);
+const money=n=>'฿'+Number(n||0).toLocaleString('th-TH',{maximumFractionDigits:2});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let fruits=JSON.parse(localStorage.getItem('ff13_fruits')||'["แก้วมังกร","ลองกอง"]');
+let records=JSON.parse(localStorage.getItem('ff13_records')||'[]');let seq=Number(localStorage.getItem('ff13_seq')||1);
+function persist(){localStorage.setItem('ff13_fruits',JSON.stringify(fruits));localStorage.setItem('ff13_records',JSON.stringify(records));localStorage.setItem('ff13_seq',seq);render()}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));$('heading').textContent=({home:'ภาพรวมธุรกิจ',compare:'ซื้อ–ขายเปรียบเทียบ',accounts:'บัญชีและรับเงิน',analysis:'วิเคราะห์ซื้อ–ขาย',daily:'สรุปผลรายวัน',history:'ประวัติรายการ'})[id];if(id==='accounts')renderAccounts();if(id==='analysis')renderAnalysis();if(id==='daily')renderDaily()}
+function tab(id,btn){document.querySelectorAll('.subpanel').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.subnav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAccounts()}
+function addGrade(preset=''){let el=document.createElement('div');el.className='grade-card compact-grade';el.innerHTML=`<div class="grade-head"><b>เบอร์ / เกรด</b><button class="remove" onclick="this.closest('.grade-card').remove();renumberGrades()">ลบ</button></div><div class="grade-top"><div class="field"><input class="grade" list="gradeOptions" placeholder="ชื่อเบอร์อื่น" value="${esc(preset)}"></div><div class="field"><input class="crates" type="number" min="0" step="1" placeholder="ลัง" aria-label="จำนวนลัง" oninput="calcCompare()"></div></div><div class="compact-inputs"><div class="field"><label>ซื้อ กก.</label><input class="bkg" type="number" min="0" step=".01" placeholder="0" oninput="autoFillSaleWeight(this);calcCompare()"></div><div class="field"><label>ซื้อ/กก.</label><input class="bp" type="number" min="0" step=".01" placeholder="0" oninput="calcCompare()"></div><div class="field"><label>ขาย/กก.</label><input class="sp" type="number" min="0" step=".01" placeholder="0" oninput="calcCompare()"></div></div><details class="sale-weight-edit"><summary>แก้ไขน้ำหนักขาย / ดูยอดของเบอร์นี้</summary><div class="field"><label>น้ำหนักขายจริง (กก.)</label><input class="skg" type="number" min="0" step=".01" placeholder="เท่ากับน้ำหนักซื้อ" oninput="this.dataset.manual='1';calcCompare()"></div><div class="amountline"><span>ยอดซื้อ <b class="ba">฿0</b></span><span>ยอดขาย <b class="sa">฿0</b></span></div><div class="amountline"><span>ไม่ส่งตลาด <b class="rejected">0 กก.</b></span><span>ต้นทุนส่วนนี้ <b class="rejectedCost">฿0</b></span></div><div class="amountline"><span>ส่วนต่างยอดเงิน</span><b class="diff">฿0</b></div></details>`;$('gradeRows').appendChild(el);renumberGrades();if(preset){el.querySelector('.bkg').focus()}}
+function autoFillSaleWeight(input){let card=input.closest('.grade-card'),sale=card.querySelector('.skg');if(!sale.dataset.manual){sale.value=input.value;}}
+function renumberGrades(){[...$('gradeRows').children].forEach((e,i)=>e.querySelector('.grade-head b').textContent='เบอร์ / เกรด '+(i+1));calcCompare()}
+function getGradeRows(){return [...$('gradeRows').children].map(e=>({grade:e.querySelector('.grade').value.trim(),crates:+(e.querySelector('.crates')?.value||0),buyKg:+e.querySelector('.bkg').value||0,saleKg:+e.querySelector('.skg').value||0,buyPrice:+e.querySelector('.bp').value||0,salePrice:+e.querySelector('.sp').value||0})).filter(r=>r.grade||r.buyKg||r.saleKg||r.buyPrice||r.salePrice||r.crates)}
+function getTruckFee(){let mode=$('truckMode')?.value||'6000';return mode==='custom'?(+($('truckCustom').value)||0):(+mode||0)}
+function renderInvoicePreview(){let rows=getGradeRows().filter(r=>r.saleKg>0&&r.salePrice>0),fruitTotal=rows.reduce((s,r)=>s+r.saleKg*r.salePrice,0),crateTotal=rows.reduce((s,r)=>s+r.crates,0),kgTotal=rows.reduce((s,r)=>s+r.saleKg,0),truck=getTruckFee();$('invoicePreview').innerHTML=rows.length?`<div style="text-align:center;font-weight:800;font-size:14px">เจ๊แป้ง</div><div style="text-align:center;font-weight:800;font-size:14px">ใบส่งสินค้า / ใบแจ้งยอด</div><div class="muted" style="text-align:center;margin:2px 0 8px">${esc($('fruit').value||'')}</div><div class="muted">วันที่ ${esc($('workDate').value||today)} · เลขที่บิล ${esc($('billNo').value||'ระบบจะสร้างให้อัตโนมัติ')}</div><div class="muted">ตลาด: ${esc($('market').value||'-')}</div><table class="invoice-table"><thead><tr><th>รายการ</th><th>ลัง</th><th>น้ำหนัก<br>(กก.)</th><th>ราคา/กก.</th><th>รวมเงิน</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.grade)}</td><td>${r.crates||0}</td><td>${r.saleKg.toLocaleString('th-TH')}</td><td>${r.salePrice.toLocaleString('th-TH')}</td><td>${money(r.saleKg*r.salePrice).replace('฿','')}</td></tr>`).join('')}</tbody><tfoot><tr><th>รวม</th><th>${crateTotal}</th><th>${kgTotal.toLocaleString('th-TH')}</th><th></th><th>${money(fruitTotal).replace('฿','')}</th></tr></tfoot></table><div style="display:flex;justify-content:space-between;font-size:11px;margin-top:8px"><span>ยอดผลไม้</span><b>${money(fruitTotal)}</b></div><div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px"><span>ค่ารถ</span><b>${money(truck)}</b></div><div style="display:flex;justify-content:space-between;font-size:13px;margin-top:7px;padding-top:7px;border-top:1px solid #bbb"><b>ยอดเรียกเก็บทั้งหมด</b><b>${money(fruitTotal+truck)}</b></div>`:'<div class="muted">กรอกข้อมูลขายเพื่อดูตัวอย่างใบส่งตลาด</div>'}
+function invoiceCanvas(){let rows=getGradeRows().filter(r=>r.saleKg>0&&r.salePrice>0);if(!rows.length){alert('กรุณากรอกข้อมูลขายก่อนสร้างใบส่งตลาด');return null}let truck=getTruckFee(),fruitTotal=rows.reduce((s,r)=>s+r.saleKg*r.salePrice,0),crates=rows.reduce((s,r)=>s+r.crates,0),kg=rows.reduce((s,r)=>s+r.saleKg,0);let c=document.createElement('canvas'),scale=2,w=900,rowH=58,h=490+rows.length*rowH;c.width=w*scale;c.height=h*scale;let x=c.getContext('2d');x.scale(scale,scale);x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#173d2c';x.fillRect(0,0,w,112);x.fillStyle='#fff';x.font='bold 34px sans-serif';x.fillText('เจ๊แป้ง',42,48);x.font='bold 28px sans-serif';x.fillText('ใบส่งสินค้า / ใบแจ้งยอด',42,88);x.fillStyle='#1d2b22';x.font='20px sans-serif';x.fillText('วันที่: '+($('workDate').value||today)+'    เลขที่บิล: '+($('billNo').value||'FF-'+String(seq).padStart(5,'0')),42,150);x.fillText('ตลาด: '+($('market').value||'-')+'    ผลไม้: '+($('fruit').value||'-'),42,185);let y=235,cols=[42,350,450,590,730,860];x.fillStyle='#eaf4ed';x.fillRect(32,y-34,836,44);x.fillStyle='#173d2c';x.font='bold 19px sans-serif';['รายการ','จำนวนลัง','น้ำหนัก (กก.)','ราคา/กก.','รวมเงิน'].forEach((t,i)=>x.fillText(t,cols[i]+(i===0?0:0),y-5));y+=30;x.font='19px sans-serif';rows.forEach(r=>{x.fillStyle='#1d2b22';let vals=[r.grade,String(r.crates||0),r.saleKg.toLocaleString('th-TH'),r.salePrice.toLocaleString('th-TH'),Math.round(r.saleKg*r.salePrice).toLocaleString('th-TH')];vals.forEach((v,i)=>x.fillText(v,cols[i],y));x.strokeStyle='#dfe6df';x.beginPath();x.moveTo(32,y+15);x.lineTo(868,y+15);x.stroke();y+=rowH});y+=18;x.font='bold 20px sans-serif';x.fillText('รวมทั้งหมด',42,y);x.fillText(String(crates),350,y);x.fillText(kg.toLocaleString('th-TH'),450,y);x.fillText(Math.round(fruitTotal).toLocaleString('th-TH')+' บาท',730,y);y+=48;x.font='20px sans-serif';x.fillText('ยอดผลไม้: '+Math.round(fruitTotal).toLocaleString('th-TH')+' บาท',42,y);y+=38;x.fillText('ค่ารถ: '+Math.round(truck).toLocaleString('th-TH')+' บาท',42,y);y+=48;x.font='bold 25px sans-serif';x.fillText('ยอดเรียกเก็บทั้งหมด: '+Math.round(fruitTotal+truck).toLocaleString('th-TH')+' บาท',42,y);return c}
+function downloadInvoice(){let c=invoiceCanvas();if(!c)return;let a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='fruit-flow-invoice.png';a.click()}
+async function shareInvoice(){let c=invoiceCanvas();if(!c)return;c.toBlob(async blob=>{if(!blob){alert('สร้างรูปไม่สำเร็จ');return}let file=new File([blob],'fruit-flow-invoice.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'ใบส่งตลาด FRUIT FLOW'})}catch(e){if(e.name!=='AbortError')alert('แชร์ไม่สำเร็จ กรุณาบันทึกรูปแล้วส่งเอง')}}else{downloadInvoice();alert('เครื่องนี้ยังไม่รองรับแชร์รูปโดยตรง จึงบันทึกรูปให้แทน')}} ,'image/png')}
+
+function calcCompare(){let rows=getGradeRows(),bk=0,sk=0,ba=0,sa=0;[...$('gradeRows').children].forEach((e,i)=>{let r=rows[i];if(!r)return;let b=r.buyKg*r.buyPrice,s=r.saleKg*r.salePrice,rejected=Math.max(0,r.buyKg-r.saleKg),rejectedCost=rejected*r.buyPrice;bk+=r.buyKg;sk+=r.saleKg;ba+=b;sa+=s;e.querySelector('.ba').textContent=money(b);e.querySelector('.sa').textContent=money(s);e.querySelector('.rejected').textContent=rejected.toLocaleString('th-TH')+' กก.';e.querySelector('.rejectedCost').textContent=money(rejectedCost);e.querySelector('.diff').textContent=money(s-b)});$('buyKg').textContent=bk.toLocaleString('th-TH')+' กก.';$('saleKg').textContent=sk.toLocaleString('th-TH')+' กก.';$('buyAmount').textContent=money(ba);$('saleAmount').textContent=money(sa);$('difference').textContent=money(sa-ba);renderInvoicePreview()}
+function saveCompare(){let rows=getGradeRows();if(!rows.length||rows.some(r=>!r.grade||((r.buyKg>0)!==(r.buyPrice>0))||((r.saleKg>0)!==(r.salePrice>0))||r.buyKg<0||r.saleKg<0||r.buyPrice<0||r.salePrice<0))return alert('กรุณาระบุชื่อเบอร์ และกรอกน้ำหนักกับราคาของฝั่งที่ทำรายการให้ครบ');let bRows=rows.filter(r=>r.buyKg>0&&r.buyPrice>0),sRows=rows.filter(r=>r.saleKg>0&&r.salePrice>0),buyAmount=bRows.reduce((s,r)=>s+r.buyKg*r.buyPrice,0),saleAmount=sRows.reduce((s,r)=>s+r.saleKg*r.salePrice,0),date=$('workDate').value||today,fruit=$('fruit').value;
+if(!bRows.length&&!sRows.length)return alert('กรุณากรอกข้อมูลฝั่งซื้อหรือฝั่งขายอย่างน้อยหนึ่งรายการ');
+if(bRows.length)records.unshift({id:'BUY-'+seq++,type:'ซื้อจากสวน',date,fruit,orchard:$('orchard').value,rows:bRows.map(r=>({grade:r.grade,kg:r.buyKg,price:r.buyPrice})),kg:bRows.reduce((s,r)=>s+r.buyKg,0),amount:buyAmount});
+if(sRows.length){let bill=$('billNo').value.trim()||'FF-'+String(seq).padStart(5,'0');records.unshift({id:'SALE-'+seq++,type:'บิลส่งตลาด',bill,date,fruit,market:$('market').value,rows:sRows.map(r=>({grade:r.grade,crates:r.crates,kg:r.saleKg,price:r.salePrice})),kg:sRows.reduce((s,r)=>s+r.saleKg,0),fruitAmount:saleAmount,truckFee:getTruckFee(),stallFee:+($('stallFee')?.value||3000),editHistory:[],amount:saleAmount+getTruckFee()})}
+persist();$('orchard').value='';$('market').value='';$('billNo').value='';$('gradeRows').innerHTML='';addGrade();calcCompare();go('home');alert('บันทึกข้อมูลซื้อและขายเรียบร้อย')}
+function paidFor(id){return records.filter(r=>r.type==='รับเงิน').reduce((s,p)=>s+(p.allocations||[]).filter(a=>a.billId===id).reduce((x,a)=>x+a.amount,0),0)}
+function remaining(b){return Math.max(0,b.amount-paidFor(b.id))}
+function drawAllocations(){let bills=records.filter(r=>r.type==='บิลส่งตลาด'&&remaining(r)>0);$('allocations').innerHTML=bills.length?bills.map(b=>`<div class="grade-card"><div class="between"><label><input type="checkbox" class="billcheck" data-id="${b.id}" style="width:auto" onchange="toggleBill('${b.id}')"> <b>${esc(b.bill)}</b></label><span class="pill warn">ค้าง ${money(remaining(b))}</span></div><div class="muted">${esc(b.market||'ไม่ระบุตลาด')} · ${esc(b.date)}</div><div class="field"><label>ยอดที่ตลาดแจ้งว่าชำระ</label><input class="alloc" data-id="${b.id}" type="number" min="0" max="${remaining(b)}" placeholder="0" disabled oninput="calcAllocation()"></div></div>`).join(''):'<div class="empty">ยังไม่มีบิลค้างรับ</div>';calcAllocation()}
+function toggleBill(id){let c=document.querySelector(`.billcheck[data-id="${id}"]`),i=document.querySelector(`.alloc[data-id="${id}"]`);i.disabled=!c.checked;i.value=c.checked?remaining(records.find(r=>r.id===id)):'';calcAllocation()}
+function calcAllocation(){let a=[...document.querySelectorAll('.alloc')].reduce((s,i)=>s+(!i.disabled?(+i.value||0):0),0),v=+$('payAmount').value||0,x=Math.max(0,v-a);$('allocTotal').textContent=money(a);$('extraTotal').textContent=money(x);$('extraChoice').style.display=x>0?'block':'none'}
+function savePayment(){let amount=+$('payAmount').value||0;if(amount<=0)return alert('กรุณากรอกยอดเงินโอน');let allocations=[...document.querySelectorAll('.alloc')].filter(i=>!i.disabled&&(+i.value||0)>0).map(i=>({billId:i.dataset.id,amount:+i.value})),used=allocations.reduce((s,a)=>s+a.amount,0);if(used>amount)return alert('ยอดตัดบิลมากกว่าเงินโอน');for(let a of allocations){let b=records.find(r=>r.id===a.billId);if(!b||a.amount>remaining(b)+.001)return alert('ยอดตัดเกินยอดค้างของบิล')}let extra=amount-used,mode=extra?$('extraMode').value:null;if(extra&&!confirm(`เงินส่วนเกิน ${money(extra)} จะ${mode==='advance'?'บันทึกเป็นเงินรับล่วงหน้า':'พักรอระบุบิล'} ใช่หรือไม่?`))return;records.unshift({id:'PAY-'+seq++,type:'รับเงิน',date:$('payDate').value||today,market:$('payMarket').value,amount,allocations,extra,extraMode:mode,note:$('payNote').value});persist();$('payAmount').value='';$('payNote').value='';alert('บันทึกรับเงินแล้ว')}
+function saveExpense(){let amount=+$('expenseAmount').value||0;if(amount<=0)return alert('กรุณากรอกจำนวนเงิน');records.unshift({id:'EXP-'+seq++,type:'ค่าใช้จ่าย',date:$('expenseDate').value||today,category:$('expenseType').value,amount,note:$('expenseNote').value});persist();$('expenseAmount').value='';$('expenseNote').value='';alert('บันทึกค่าใช้จ่ายแล้ว')}
+function renderAccounts(){drawAllocations();$('payments').innerHTML=records.filter(r=>r.type==='รับเงิน').map(r=>`<div class="listrow"><div class="between"><b>${esc(r.market||'ตลาดไม่ระบุ')}</b>${esc(r.date)}</div>รับเงิน ${money(r.amount)} · ตัดบิล ${money(r.allocations.reduce((s,a)=>s+a.amount,0))}<div class="muted">${r.extra?`ส่วนเกิน ${money(r.extra)} · ${r.extraMode==='advance'?'เงินรับล่วงหน้า':'พักรอระบุบิล'}`:'ไม่มีเงินส่วนเกิน'}</div></div>`).join('')||'<div class="empty">ยังไม่มีรายการรับเงิน</div>';$('billList').innerHTML=records.filter(r=>r.type==='บิลส่งตลาด').map(b=>`<div class="listrow"><div class="between"><b>${esc(b.bill)}</b><span class="pill ${remaining(b)===0?'good':'warn'}">${remaining(b)===0?'รับครบ':'ค้างรับ'}</span></div><div class="muted">${esc(b.market||'ไม่ระบุตลาด')} · ${esc(b.date)}</div>ยอดบิล ${money(b.amount)} · ค่าแผงภายใน ${money(b.stallFee??3000)} · รับแล้ว ${money(paidFor(b.id))} · คงเหลือบิล ${money(remaining(b))} · สุทธิหลังหักค่าแผง ${money((b.fruitAmount??b.amount)-(b.stallFee??3000))}</div>`).join('')||'<div class="empty">ยังไม่มีบิล</div>'}
+function recordLine(r){let desc=r.type==='ซื้อจากสวน'?`${r.fruit} · ${r.orchard||'ไม่ระบุสวน'} · ${(r.rows||[]).map(x=>x.grade+' '+x.kg+'กก. @'+x.price).join(', ')}`:r.type==='บิลส่งตลาด'?`${r.bill} · ${r.fruit} · ${(r.rows||[]).map(x=>x.grade+' '+x.kg+'กก. @'+x.price).join(', ')}`:r.type==='รับเงิน'?`${r.market||'ตลาด'} · ตัด ${(r.allocations||[]).length} บิล · ส่วนเกิน ${money(r.extra||0)}`:`${r.category} · ${r.note||''}`;return `<div class="listrow" role="button" onclick="openRecord('${r.id}')"><div class="between"><b>${esc(r.type)}</b><span class="muted">${esc(r.date)}</span></div><div class="muted">${esc(desc)}</div><div class="between"><span class="muted">แตะเพื่อดู / แก้ไข</span><b>${money(r.amount)}</b></div></div>`}
+
+
+
+let activeRecordId=null;
+function closeRecord(){$('recordModal').style.display='none';activeRecordId=null}
+function openRecord(id){
+ const r=records.find(x=>x.id===id);if(!r)return;activeRecordId=id;
+ $('recordModalTitle').textContent='รายละเอียด'+(r.type==='บิลส่งตลาด'?'บิลส่งตลาด':r.type);
+ let body='';
+ body+=`<div class="detail-line">วันที่: ${esc(r.date)} · เลขที่รายการ: ${esc(r.bill||r.id)}</div>`;
+ if(r.type==='บิลส่งตลาด'){
+  const received=paidFor(r.id),fee=r.stallFee??3000;
+  body+=`<div class="detail-line">ตลาด: ${esc(r.market||'-')} · ผลไม้: ${esc(r.fruit||'-')}</div>`;
+  body+=`<div class="detail-line">ยอดผลไม้ ${money(r.fruitAmount??r.amount)} · ค่ารถ ${money(r.truckFee||0)} · ยอดเรียกเก็บ ${money(r.amount)}</div>`;
+  body+=`<div class="detail-line">รับเงินแล้ว ${money(received)} · ค้างรับ ${money(remaining(r))}</div>`;
+  body+=`<div class="detail-line">ค่าแผงภายใน ${money(fee)} · สุทธิหลังหักค่าแผง ${money((r.fruitAmount??r.amount)-fee)}</div>`;
+ } else if(r.type==='ซื้อจากสวน'){
+  body+=`<div class="detail-line">สวน: ${esc(r.orchard||'-')} · ผลไม้: ${esc(r.fruit||'-')} · ยอดซื้อ ${money(r.amount)}</div>`;
+ } else {
+  body+=`<div class="detail-line">ยอดเงิน ${money(r.amount)}</div>`;
+ }
+ body+=`<h3>รายการเบอร์</h3><table><thead><tr><th>เบอร์</th>${r.type==='บิลส่งตลาด'?'<th>ลัง</th>':''}<th>กก.</th><th>บาท/กก.</th><th>รวม</th></tr></thead><tbody>${(r.rows||[]).map((x,i)=>`<tr><td>${esc(x.grade)}</td>${r.type==='บิลส่งตลาด'?`<td>${x.crates||0}</td>`:''}<td>${x.kg}</td><td>${x.price}</td><td>${money(x.kg*x.price)}</td></tr>`).join('')}</tbody></table>`;
+ body+=`<div class="modal-actions"><button class="outline" onclick="editRecord('${r.id}')">แก้ไขข้อมูล</button>${r.type==='บิลส่งตลาด'?`<button class="outline" onclick="invoiceSavedRecord('${r.id}')">สร้าง / บันทึกบิลตลาด</button><button class="outline" onclick="shareSavedInvoice('${r.id}')">แชร์บิลตลาด</button>`:''}<button class="danger" onclick="deleteRecord('${r.id}')">ลบรายการนี้</button></div>`;
+ if(r.editHistory?.length)body+=`<details><summary>ประวัติการแก้ไข (${r.editHistory.length})</summary>${r.editHistory.map(h=>`<div class="detail-line">${esc(h.at)} · ${esc(h.note||'แก้ไขข้อมูล')}</div>`).join('')}</details>`;
+ $('recordModalBody').innerHTML=body;$('recordModal').style.display='flex';
+}
+function deleteRecord(id){
+ const r=records.find(x=>x.id===id);if(!r)return;
+ if(r.type==='บิลส่งตลาด'){
+  const linked=records.some(p=>p.type==='รับเงิน'&&(p.allocations||[]).some(a=>a.billId===id));
+  if(linked){alert('ลบบิลนี้ไม่ได้ เพราะมีรายการรับเงินที่ตัดเข้าบิลแล้ว กรุณาตรวจสอบและแก้ไขรายการรับเงินก่อน เพื่อป้องกันยอดบัญชีคลาดเคลื่อน');return}
+ }
+ const label=r.bill||r.type+' วันที่ '+r.date;
+ if(!confirm('ยืนยันลบ '+label+' ใช่หรือไม่? การลบนี้ไม่สามารถย้อนกลับได้'))return;
+ records=records.filter(x=>x.id!==id);
+ persist();closeRecord();alert('ลบรายการเรียบร้อย');
+}
+function editRecord(id){
+ const r=records.find(x=>x.id===id);if(!r)return;activeRecordId=id;
+ let body=`<div class="edit-grid"><div class="field"><label>วันที่</label><input id="edDate" type="date" value="${esc(r.date)}"></div><div class="field"><label>ผลไม้</label><input id="edFruit" value="${esc(r.fruit||'')}"></div>`;
+ if(r.type==='บิลส่งตลาด')body+=`<div class="field"><label>ตลาด</label><input id="edMarket" value="${esc(r.market||'')}"></div><div class="field"><label>เลขที่บิล</label><input id="edBill" value="${esc(r.bill||'')}"></div><div class="field"><label>ค่ารถ</label><input id="edTruck" type="number" value="${r.truckFee||0}"></div><div class="field"><label>ค่าแผงภายใน (บาท/เที่ยว)</label><input id="edStall" type="number" value="${r.stallFee??3000}"></div>`;
+ if(r.type==='ซื้อจากสวน')body+=`<div class="field"><label>สวน</label><input id="edOrchard" value="${esc(r.orchard||'')}"></div>`;
+ body+=`</div><h3>แก้ไขรายการเบอร์</h3><table><thead><tr><th>เบอร์</th>${r.type==='บิลส่งตลาด'?'<th>ลัง</th>':''}<th>กก.</th><th>บาท/กก.</th></tr></thead><tbody>`;
+ (r.rows||[]).forEach((x,i)=>{body+=`<tr><td><input id="edGrade${i}" value="${esc(x.grade)}"></td>${r.type==='บิลส่งตลาด'?`<td><input id="edCrates${i}" type="number" value="${x.crates||0}"></td>`:''}<td><input id="edKg${i}" type="number" step=".01" value="${x.kg}"></td><td><input id="edPrice${i}" type="number" step=".01" value="${x.price}"></td></tr>`});
+ body+=`</tbody></table><div class="modal-actions"><button onclick="saveRecordEdit('${r.id}')">บันทึกการแก้ไข</button><button class="outline" onclick="openRecord('${r.id}')">ยกเลิก</button></div>`;
+ $('recordModalTitle').textContent='แก้ไขรายการ';$('recordModalBody').innerHTML=body;
+}
+function saveRecordEdit(id){
+ const r=records.find(x=>x.id===id);if(!r)return;
+ const old=JSON.stringify({date:r.date,fruit:r.fruit,orchard:r.orchard,market:r.market,bill:r.bill,truckFee:r.truckFee,stallFee:r.stallFee,rows:r.rows,amount:r.amount});
+ r.date=$('edDate').value||r.date;r.fruit=$('edFruit').value;
+ if(r.type==='บิลส่งตลาด'){r.market=$('edMarket').value;r.bill=$('edBill').value;r.truckFee=Math.max(0,+$('edTruck').value||0);r.stallFee=Math.max(0,+$('edStall').value||0)}
+ if(r.type==='ซื้อจากสวน')r.orchard=$('edOrchard').value;
+ r.rows=(r.rows||[]).map((x,i)=>({grade:$('edGrade'+i).value.trim(),crates:r.type==='บิลส่งตลาด'?Math.max(0,+$('edCrates'+i).value||0):undefined,kg:Math.max(0,+$('edKg'+i).value||0),price:Math.max(0,+$('edPrice'+i).value||0)}));
+ r.kg=r.rows.reduce((s,x)=>s+x.kg,0);
+ if(r.type==='บิลส่งตลาด'){r.fruitAmount=r.rows.reduce((s,x)=>s+x.kg*x.price,0);r.amount=r.fruitAmount+r.truckFee}
+ else if(r.type==='ซื้อจากสวน')r.amount=r.rows.reduce((s,x)=>s+x.kg*x.price,0);
+ r.editHistory=r.editHistory||[];r.editHistory.push({at:new Date().toLocaleString('th-TH'),note:'แก้ไขข้อมูล',before:old});
+ persist();openRecord(id);
+}
+function invoiceCanvasForRecord(r){
+ const rows=r.rows||[];if(!rows.length){alert('ไม่มีรายการสินค้าในบิล');return null}
+ const fruitTotal=r.fruitAmount??rows.reduce((s,x)=>s+x.kg*x.price,0),truck=r.truckFee||0,crates=rows.reduce((s,x)=>s+(x.crates||0),0),kg=rows.reduce((s,x)=>s+x.kg,0);
+ let c=document.createElement('canvas'),scale=2,w=900,rowH=58,h=490+rows.length*rowH;c.width=w*scale;c.height=h*scale;let x=c.getContext('2d');x.scale(scale,scale);x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#173d2c';x.fillRect(0,0,w,112);x.fillStyle='#fff';x.font='bold 34px sans-serif';x.fillText('เจ๊แป้ง',42,48);x.font='bold 28px sans-serif';x.fillText('ใบส่งสินค้า / ใบแจ้งยอด',42,88);x.fillStyle='#1d2b22';x.font='20px sans-serif';x.fillText('วันที่: '+r.date+'    เลขที่บิล: '+r.bill,42,150);x.fillText('ตลาด: '+(r.market||'-')+'    ผลไม้: '+(r.fruit||'-'),42,185);let y=235,cols=[42,350,450,590,730];x.fillStyle='#eaf4ed';x.fillRect(32,y-34,836,44);x.fillStyle='#173d2c';x.font='bold 19px sans-serif';['รายการ','จำนวนลัง','น้ำหนัก (กก.)','ราคา/กก.','รวมเงิน'].forEach((t,i)=>x.fillText(t,cols[i],y-5));y+=30;x.font='19px sans-serif';rows.forEach(rw=>{let vals=[rw.grade,String(rw.crates||0),rw.kg.toLocaleString('th-TH'),rw.price.toLocaleString('th-TH'),Math.round(rw.kg*rw.price).toLocaleString('th-TH')];x.fillStyle='#1d2b22';vals.forEach((v,i)=>x.fillText(v,cols[i],y));x.strokeStyle='#dfe6df';x.beginPath();x.moveTo(32,y+15);x.lineTo(868,y+15);x.stroke();y+=rowH});y+=18;x.font='bold 20px sans-serif';x.fillText('รวมทั้งหมด',42,y);x.fillText(String(crates),350,y);x.fillText(kg.toLocaleString('th-TH'),450,y);x.fillText(Math.round(fruitTotal).toLocaleString('th-TH')+' บาท',730,y);y+=48;x.font='20px sans-serif';x.fillText('ยอดผลไม้: '+Math.round(fruitTotal).toLocaleString('th-TH')+' บาท',42,y);y+=38;x.fillText('ค่ารถ: '+Math.round(truck).toLocaleString('th-TH')+' บาท',42,y);y+=48;x.font='bold 25px sans-serif';x.fillText('ยอดเรียกเก็บทั้งหมด: '+Math.round(fruitTotal+truck).toLocaleString('th-TH')+' บาท',42,y);y+=42;x.strokeStyle='#173d2c';x.lineWidth=2;x.beginPath();x.moveTo(32,y);x.lineTo(868,y);x.stroke();x.fillStyle='#68776f';x.font='15px sans-serif';x.fillText('สิ้นสุดรายการ',42,y+25);return c;
+}
+function invoiceSavedRecord(id){let r=records.find(x=>x.id===id&&x.type==='บิลส่งตลาด');if(!r)return;let c=invoiceCanvasForRecord(r);if(!c)return;let a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=(r.bill||'market-invoice')+'.png';a.click()}
+async function shareSavedInvoice(id){let r=records.find(x=>x.id===id&&x.type==='บิลส่งตลาด');if(!r)return;let c=invoiceCanvasForRecord(r);if(!c)return;c.toBlob(async blob=>{let f=new File([blob],(r.bill||'market-invoice')+'.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'ใบส่งตลาด'})}catch(e){if(e.name!=='AbortError')alert('แชร์ไม่สำเร็จ')}}else invoiceSavedRecord(id)},'image/png')}
+
+
+function renderDaily(){
+ let date=$('dailyDate').value||today;
+ let day=records.filter(r=>r.date===date),buys=day.filter(r=>r.type==='ซื้อจากสวน'),sales=day.filter(r=>r.type==='บิลส่งตลาด'),expenses=day.filter(r=>r.type==='ค่าใช้จ่าย');
+ let buyAmount=buys.reduce((s,r)=>s+r.amount,0),saleAmount=sales.reduce((s,r)=>s+(r.fruitAmount??r.amount),0),expenseAmount=expenses.reduce((s,r)=>s+r.amount,0)+sales.reduce((s,r)=>s+(r.stallFee??3000),0);
+ let buyKg=buys.reduce((s,r)=>s+(r.kg||0),0),saleKg=sales.reduce((s,r)=>s+(r.kg||0),0);
+ let outstanding=sales.reduce((s,b)=>s+remaining(b),0);
+ let gradeMap={};
+ buys.forEach(r=>(r.rows||[]).forEach(x=>{let k=(r.fruit||'')+' · '+x.grade;if(!gradeMap[k])gradeMap[k]={buyKg:0,buyCost:0,saleKg:0,saleRevenue:0};gradeMap[k].buyKg+=x.kg;gradeMap[k].buyCost+=x.kg*x.price}));
+ sales.forEach(r=>(r.rows||[]).forEach(x=>{let k=(r.fruit||'')+' · '+x.grade;if(!gradeMap[k])gradeMap[k]={buyKg:0,buyCost:0,saleKg:0,saleRevenue:0};gradeMap[k].saleKg+=x.kg;gradeMap[k].saleRevenue+=x.kg*x.price}));
+ let rejectedKg=0,rejectedCost=0;
+ Object.values(gradeMap).forEach(x=>{let diff=Math.max(0,x.buyKg-x.saleKg),avg=x.buyKg?x.buyCost/x.buyKg:0;rejectedKg+=diff;rejectedCost+=diff*avg});
+ $('dBuy').textContent=money(buyAmount);$('dSale').textContent=money(saleAmount);$('dExpense').textContent=money(expenseAmount);$('dAR').textContent=money(outstanding);
+ $('dBuyKg').textContent=buyKg.toLocaleString('th-TH')+' กก.';$('dSaleKg').textContent=saleKg.toLocaleString('th-TH')+' กก.';$('dRejectedKg').textContent=rejectedKg.toLocaleString('th-TH')+' กก.';$('dRejectedCost').textContent=money(rejectedCost);
+ let result=saleAmount-buyAmount-expenseAmount;$('dResult').textContent=money(result);$('dResult').style.color=result<0?'var(--red)':'var(--green)';
+ let keys=Object.keys(gradeMap);
+ $('dailyGrades').innerHTML=keys.length?keys.map(k=>{let x=gradeMap[k],rej=Math.max(0,x.buyKg-x.saleKg),cost=rej*(x.buyKg?x.buyCost/x.buyKg:0);return `<div class="listrow"><b>${esc(k)}</b><div class="between"><span class="muted">ซื้อ ${x.buyKg} กก. · ${money(x.buyCost)}</span><span class="muted">ขาย ${x.saleKg} กก. · ${money(x.saleRevenue)}</span></div><div class="between"><span class="muted">ไม่ส่งตลาด ${rej} กก. · ต้นทุน ${money(cost)}</span><b>${money(x.saleRevenue-x.buyCost)}</b></div></div>`}).join(''):'<div class="empty">ไม่มีรายการซื้อหรือขายในวันที่เลือก</div>';
+ $('dailyRecords').innerHTML=day.length?day.map(recordLine).join(''):'<div class="empty">ยังไม่มีรายการในวันที่เลือก</div>';
+}
+function renderAnalysis(){let map={};records.filter(r=>r.type==='ซื้อจากสวน'||r.type==='บิลส่งตลาด').forEach(r=>(r.rows||[]).forEach(x=>{let k=r.fruit+' · '+x.grade;if(!map[k])map[k]={buy:0,sale:0,bkg:0,skg:0};if(r.type==='ซื้อจากสวน'){map[k].buy+=x.kg*x.price;map[k].bkg+=x.kg}else{map[k].sale+=x.kg*x.price;map[k].skg+=x.kg}}));let keys=Object.keys(map);$('analysisRows').innerHTML=keys.length?keys.map(k=>{let x=map[k];return `<div class="listrow"><b>${esc(k)}</b><div class="between"><span class="muted">ซื้อ ${x.bkg} กก. · ${money(x.buy)}</span><span class="muted">ขาย ${x.skg} กก. · ${money(x.sale)}</span></div><div class="between"><span>ส่วนต่างยอดเงิน</span><b>${money(x.sale-x.buy)}</b></div></div>`}).join(''):'<div class="empty">ยังไม่มีข้อมูลให้วิเคราะห์</div>'}
+function render(){let buys=records.filter(r=>r.type==='ซื้อจากสวน').reduce((s,r)=>s+r.amount,0),sales=records.filter(r=>r.type==='บิลส่งตลาด').reduce((s,r)=>s+(r.fruitAmount??r.amount),0),otherExpenses=records.filter(r=>r.type==='ค่าใช้จ่าย').reduce((s,r)=>s+r.amount,0),stallTotal=records.filter(r=>r.type==='บิลส่งตลาด').reduce((s,r)=>s+(r.stallFee??3000),0),expenses=otherExpenses+stallTotal,profitBeforeStall=sales-buys-otherExpenses,profitAfterStall=profitBeforeStall-stallTotal,ar=records.filter(r=>r.type==='บิลส่งตลาด').reduce((s,b)=>s+remaining(b),0);$('buySum').textContent=money(buys);$('saleSum').textContent=money(sales);$('expenseSum').textContent=money(expenses);$('arSum').textContent=money(ar);$('margin').textContent=money(profitAfterStall);$('marginHint').textContent=`จาก ${records.length} รายการ · ส่วนต่างเบื้องต้นหลังหักค่าแผง`;$('profitBeforeStall').textContent=money(profitBeforeStall);$('profitAfterStall').textContent=money(profitAfterStall);$('recent').innerHTML=records.slice(0,5).map(recordLine).join('')||'<div class="empty">ยังไม่มีรายการ</div>';$('historyList').innerHTML=records.map(recordLine).join('')||'<div class="empty">ยังไม่มีรายการ</div>';renderAccounts();renderAnalysis();if($('dailyDate'))renderDaily()}
+function exportCSV(){if(!records.length)return alert('ยังไม่มีข้อมูล');let rows=[['วันที่','ประเภท','เลขบิล','ผลไม้','สวน/ตลาด','น้ำหนัก','ยอดเงิน','รายละเอียด'],...records.map(r=>[r.date,r.type,r.bill||'',r.fruit||'',r.market||r.orchard||r.category||'',r.kg||'',r.amount,(r.rows||[]).map(x=>`${x.grade}:${x.kg}kg@${x.price}`).join(' | ')])];let csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='fruit-flow.csv';a.click();URL.revokeObjectURL(a.href)}
+
+function downloadBackup(){
+ const payload={
+  app:'FRUIT FLOW',
+  backupVersion:1,
+  createdAt:new Date().toISOString(),
+  fruits:fruits,
+  records:records,
+  seq:seq
+ };
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+ a.href=url;a.download='fruit-flow-backup-'+stamp+'.json';
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+ $('backupStatus').textContent='สำรองข้อมูลแล้ว · '+records.length+' รายการ · '+new Date().toLocaleString('th-TH');
+}
+function restoreBackup(event){
+ const file=event.target.files&&event.target.files[0];
+ if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const data=JSON.parse(String(reader.result||''));
+   if(data.app!=='FRUIT FLOW'||data.backupVersion!==1||!Array.isArray(data.records)||!Array.isArray(data.fruits)){
+    alert('ไฟล์นี้ไม่ใช่ไฟล์สำรอง FRUIT FLOW ที่รองรับ');event.target.value='';return;
+   }
+   const validRecords=data.records.every(r=>r&&typeof r==='object'&&typeof r.type==='string'&&typeof r.id==='string');
+   if(!validRecords){alert('ข้อมูลในไฟล์ไม่สมบูรณ์ จึงยังนำเข้ากลับไม่ได้');event.target.value='';return}
+   const summary=`ไฟล์นี้มีข้อมูล ${data.records.length} รายการ และผลไม้ ${data.fruits.length} ชนิด\\n\\nการกู้คืนจะแทนที่ข้อมูลที่อยู่ในเครื่องนี้ทั้งหมด\\nควรดาวน์โหลดไฟล์สำรองของข้อมูลปัจจุบันเก็บไว้ก่อน\\n\\nต้องการดำเนินการต่อหรือไม่?`;
+   if(!confirm(summary)){event.target.value='';return}
+   records=data.records;
+   fruits=data.fruits;
+   seq=Math.max(1,Number(data.seq)||1);
+   persist();
+   $('fruit').innerHTML=fruits.map(f=>`<option>${esc(f)}</option>`).join('');
+   $('backupStatus').textContent='กู้คืนข้อมูลสำเร็จ · '+records.length+' รายการ · '+new Date().toLocaleString('th-TH');
+   alert('กู้คืนข้อมูลสำเร็จแล้ว');
+  }catch(err){alert('อ่านไฟล์ไม่สำเร็จ กรุณาเลือกไฟล์สำรอง JSON ที่ถูกต้อง')}
+  event.target.value='';
+ };
+ reader.onerror=()=>{alert('ไม่สามารถอ่านไฟล์นี้ได้');event.target.value=''};
+ reader.readAsText(file);
+}
+
+function clearData(){if(!records.length)return alert('ยังไม่มีประวัติให้ลบ');if(confirm('ยืนยันลบประวัติทุกรายการในเครื่องนี้ใช่หรือไม่? ข้อมูลซื้อ ขาย รับเงิน และค่าใช้จ่ายทั้งหมดจะถูกลบ และกู้คืนไม่ได้')){records=[];seq=1;persist();alert('ล้างประวัติทั้งหมดแล้ว')}}
+$('dateText').textContent=new Date().toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+if($('stallFee'))$('stallFee').value=3000;
+['workDate','payDate','expenseDate','dailyDate'].forEach(id=>$(id).value=today);
+$('fruit').innerHTML=fruits.map(f=>`<option>${esc(f)}</option>`).join('');
+addGrade();['workDate','market','billNo','fruit','truckMode','truckCustom'].forEach(id=>$(id).addEventListener('input',renderInvoicePreview));render();
+</script></body></html>
